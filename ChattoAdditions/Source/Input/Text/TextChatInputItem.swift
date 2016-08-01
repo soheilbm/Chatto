@@ -35,9 +35,9 @@ public class TextChatInputItem {
 
     public class func createDefaultButtonAppearance() -> TabInputButtonAppearance {
         let images: [UIControlState: UIImage] = [
-            .Normal: UIImage(named: "text-icon-unselected", inBundle: NSBundle(forClass: TextChatInputItem.self), compatibleWithTraitCollection: nil)!,
-            .Selected: UIImage(named: "text-icon-selected", inBundle: NSBundle(forClass: TextChatInputItem.self), compatibleWithTraitCollection: nil)!,
-            .Highlighted: UIImage(named: "text-icon-selected", inBundle: NSBundle(forClass: TextChatInputItem.self), compatibleWithTraitCollection: nil)!
+            UIControlState(): UIImage(named: "text-icon-unselected", in: Bundle(for: TextChatInputItem.self), compatibleWith: nil)!,
+            .selected: UIImage(named: "text-icon-selected", in: Bundle(for: TextChatInputItem.self), compatibleWith: nil)!,
+            .highlighted: UIImage(named: "text-icon-selected", in: Bundle(for: TextChatInputItem.self), compatibleWith: nil)!
         ]
         return TabInputButtonAppearance(images: images, size: nil)
     }
@@ -48,7 +48,7 @@ public class TextChatInputItem {
 
     public var selected = false {
         didSet {
-            self.internalTabView.selected = self.selected
+            self.internalTabView.isSelected = self.selected
         }
     }
 }
@@ -56,7 +56,7 @@ public class TextChatInputItem {
 // MARK: - ChatInputItemProtocol
 extension TextChatInputItem : ChatInputItemProtocol {
     public var presentationMode: ChatInputItemPresentationMode {
-        return .Keyboard
+        return .keyboard
     }
 
     public var showsSendButton: Bool {
@@ -71,7 +71,7 @@ extension TextChatInputItem : ChatInputItemProtocol {
         return self.internalTabView
     }
 
-    public func handleInput(input: AnyObject) {
+    public func handleInput(_ input: AnyObject) {
         if let text = input as? String {
             self.textInputHandler?(text)
         }

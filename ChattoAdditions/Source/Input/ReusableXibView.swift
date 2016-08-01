@@ -27,18 +27,18 @@ import UIKit
 @objc public class ReusableXibView: UIView {
 
     func loadViewFromNib() -> UIView {
-        let bundle = NSBundle(forClass: self.dynamicType)
+        let bundle = Bundle(for: self.dynamicType)
         let nib = UINib(nibName:self.dynamicType.nibName(), bundle: bundle)
-        let view = nib.instantiateWithOwner(nil, options: nil).first as! UIView
+        let view = nib.instantiate(withOwner: nil, options: nil).first as! UIView
         return view
     }
 
-    override public func awakeAfterUsingCoder(aDecoder: NSCoder) -> AnyObject? {
+    override public func awakeAfter(using aDecoder: NSCoder) -> AnyObject? {
         if self.subviews.count > 0 {
             return self
         }
 
-        let bundle = NSBundle(forClass: self.dynamicType)
+        let bundle = Bundle(for: self.dynamicType)
         if let loadedView = bundle.loadNibNamed(self.dynamicType.nibName(), owner: nil, options: nil)?.first as? UIView {
             loadedView.frame = frame
             loadedView.autoresizingMask = autoresizingMask

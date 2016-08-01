@@ -41,7 +41,7 @@ public class Observable<T> {
         }
     }
 
-    public func observe(observer: AnyObject, closure: (old: T, new: T) -> ()) {
+    public func observe(_ observer: AnyObject, closure: (old: T, new: T) -> ()) {
         self.observers.append(Observer(owner: observer, closure: closure))
         self.cleanDeadObservers()
     }

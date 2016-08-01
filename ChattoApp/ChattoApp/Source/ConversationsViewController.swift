@@ -26,7 +26,7 @@ import UIKit
 
 class ConversationsViewController: UITableViewController {
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
 
         var initialCount = 0
         let pageSize = 50
@@ -46,10 +46,10 @@ class ConversationsViewController: UITableViewController {
 
 
         let chatController = { () -> DemoChatViewController? in
-            if let controller = segue.destinationViewController as? DemoChatViewController {
+            if let controller = segue.destination as? DemoChatViewController {
                 return controller
             }
-            if let tabController = segue.destinationViewController as? UITabBarController,
+            if let tabController = segue.destination as? UITabBarController,
                 controller = tabController.viewControllers?.first as? DemoChatViewController {
                 return controller
             }

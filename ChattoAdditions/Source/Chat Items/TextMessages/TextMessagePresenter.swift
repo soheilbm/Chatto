@@ -40,7 +40,7 @@ public class TextMessagePresenter<ViewModelBuilderT, InteractionHandlerT where
         sizingCell: TextMessageCollectionViewCell,
         baseCellStyle: BaseMessageCollectionViewCellStyleProtocol,
         textCellStyle: TextMessageCollectionViewCellStyleProtocol,
-        layoutCache: NSCache) {
+        layoutCache: NSCache<AnyObject, AnyObject>) {
             self.layoutCache = layoutCache
             self.textCellStyle = textCellStyle
             super.init(
@@ -52,17 +52,17 @@ public class TextMessagePresenter<ViewModelBuilderT, InteractionHandlerT where
             )
     }
 
-    let layoutCache: NSCache
+    let layoutCache: NSCache<AnyObject, AnyObject>
     let textCellStyle: TextMessageCollectionViewCellStyleProtocol
 
-    public override class func registerCells(collectionView: UICollectionView) {
-        collectionView.registerClass(TextMessageCollectionViewCell.self, forCellWithReuseIdentifier: "text-message-incoming")
-        collectionView.registerClass(TextMessageCollectionViewCell.self, forCellWithReuseIdentifier: "text-message-outcoming")
+    public override class func registerCells(_ collectionView: UICollectionView) {
+        collectionView.register(TextMessageCollectionViewCell.self, forCellWithReuseIdentifier: "text-message-incoming")
+        collectionView.register(TextMessageCollectionViewCell.self, forCellWithReuseIdentifier: "text-message-outcoming")
     }
 
-    public override func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionViewCell {
+    public override func dequeueCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionViewCell {
         let identifier = self.messageViewModel.isIncoming ? "text-message-incoming" : "text-message-outcoming"
-        return collectionView.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath)
+        return collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)
     }
     
     public override func createViewModel() -> ViewModelBuilderT.ViewModelT {
@@ -85,7 +85,7 @@ public class TextMessagePresenter<ViewModelBuilderT, InteractionHandlerT where
         return nil
     }
 
-    public override func configureCell(cell: BaseMessageCollectionViewCell<TextBubbleView>, decorationAttributes: ChatItemDecorationAttributes, animated: Bool, additionalConfiguration: (() -> Void)?) {
+    public override func configureCell(_ cell: BaseMessageCollectionViewCell<TextBubbleView>, decorationAttributes: ChatItemDecorationAttributes, animated: Bool, additionalConfiguration: (() -> Void)?) {
         guard let cell = cell as? TextMessageCollectionViewCell else {
             assert(false, "Invalid cell received")
             return
@@ -101,7 +101,7 @@ public class TextMessagePresenter<ViewModelBuilderT, InteractionHandlerT where
     
     public func updateCurrentCell() {
         if let cell = self.textCell, decorationAttributes = self.decorationAttributes {
-            self.configureCell(cell, decorationAttributes: decorationAttributes, animated: self.itemVisibility != .Appearing, additionalConfiguration: nil)
+            self.configureCell(cell, decorationAttributes: decorationAttributes, animated: self.itemVisibility != .appearing, additionalConfiguration: nil)
         }
     }
 
@@ -109,13 +109,13 @@ public class TextMessagePresenter<ViewModelBuilderT, InteractionHandlerT where
         return true
     }
 
-    public override func canPerformMenuControllerAction(action: Selector) -> Bool {
+    public override func canPerformMenuControllerAction(_ action: Selector) -> Bool {
         return action == #selector(NSObject.copy(_:))
     }
 
-    public override func performMenuControllerAction(action: Selector) {
+    public override func performMenuControllerAction(_ action: Selector) {
         if action == #selector(NSObject.copy(_:)) {
-            UIPasteboard.generalPasteboard().string = self.messageViewModel.text
+            UIPasteboard.general.string = self.messageViewModel.text
         } else {
             assert(false, "Unexpected action")
         }

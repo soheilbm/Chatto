@@ -23,21 +23,21 @@ THE SOFTWARE.
 */
 import Foundation
 
-public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: CollectionType {
+public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collection {
 
     private let items: [T]
     private let itemIndexesById: [String: Int] // Maping to the position in the array instead the item itself for better performance
 
     public init(items: [T]) {
         var dictionary = [String: Int](minimumCapacity: items.count)
-        for (index, item) in items.enumerate() {
+        for (index, item) in items.enumerated() {
             dictionary[item.uid] = index
         }
         self.items = items
         self.itemIndexesById = dictionary
     }
 
-    public func indexOf(uid: String) -> Int? {
+    public func indexOf(_ uid: String) -> Int? {
         return self.itemIndexesById[uid]
     }
 
@@ -52,8 +52,20 @@ public struct ReadOnlyOrderedDictionary<T where T: UniqueIdentificable>: Collect
         return nil
     }
 
-    public func generate() -> IndexingGenerator<[T]> {
-        return self.items.generate()
+    public func makeIterator() -> IndexingIterator<[T]> {
+        return self.items.makeIterator()
+    }
+
+    public func index(_ i: Int, offsetBy n: Int) -> Int {
+        return self.items.index(i, offsetBy: n)
+    }
+
+    public func index(_ i: Int, offsetBy n: Int, limitedBy limit: Int) -> Int? {
+        return self.items.index(i, offsetBy: n, limitedBy: limit)
+    }
+
+    public func index(after i: Int) -> Int {
+        return self.items.index(after: i)
     }
 
     public var startIndex: Int {

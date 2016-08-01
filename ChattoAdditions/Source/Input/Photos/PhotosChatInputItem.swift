@@ -40,9 +40,9 @@ public class PhotosChatInputItem: ChatInputItemProtocol {
 
     public class func createDefaultButtonAppearance() -> TabInputButtonAppearance {
         let images: [UIControlState: UIImage] = [
-            .Normal: UIImage(named: "camera-icon-unselected", inBundle: NSBundle(forClass: Class.self), compatibleWithTraitCollection: nil)!,
-            .Selected: UIImage(named: "camera-icon-selected", inBundle: NSBundle(forClass: Class.self), compatibleWithTraitCollection: nil)!,
-            .Highlighted: UIImage(named: "camera-icon-selected", inBundle: NSBundle(forClass: Class.self), compatibleWithTraitCollection: nil)!
+            UIControlState(): UIImage(named: "camera-icon-unselected", in: Bundle(for: Class.self), compatibleWith: nil)!,
+            .selected: UIImage(named: "camera-icon-selected", in: Bundle(for: Class.self), compatibleWith: nil)!,
+            .highlighted: UIImage(named: "camera-icon-selected", in: Bundle(for: Class.self), compatibleWith: nil)!
         ]
         return TabInputButtonAppearance(images: images, size: nil)
     }
@@ -59,14 +59,14 @@ public class PhotosChatInputItem: ChatInputItemProtocol {
 
     public var selected = false {
         didSet {
-            self.internalTabView.selected = self.selected
+            self.internalTabView.isSelected = self.selected
         }
     }
 
     // MARK: - ChatInputItemProtocol
 
     public var presentationMode: ChatInputItemPresentationMode {
-        return .CustomView
+        return .customView
     }
 
     public var showsSendButton: Bool {
@@ -81,7 +81,7 @@ public class PhotosChatInputItem: ChatInputItemProtocol {
         return self.internalTabView
     }
 
-    public func handleInput(input: AnyObject) {
+    public func handleInput(_ input: AnyObject) {
         if let image = input as? UIImage {
             self.photoInputHandler?(image)
         }
@@ -90,15 +90,15 @@ public class PhotosChatInputItem: ChatInputItemProtocol {
 
 // MARK: - PhotosInputViewDelegate
 extension PhotosChatInputItem: PhotosInputViewDelegate {
-    func inputView(inputView: PhotosInputViewProtocol, didSelectImage image: UIImage) {
+    func inputView(_ inputView: PhotosInputViewProtocol, didSelectImage image: UIImage) {
         self.photoInputHandler?(image)
     }
 
-    func inputViewDidRequestCameraPermission(inputView: PhotosInputViewProtocol) {
+    func inputViewDidRequestCameraPermission(_ inputView: PhotosInputViewProtocol) {
         self.cameraPermissionHandler?()
     }
 
-    func inputViewDidRequestPhotoLibraryPermission(inputView: PhotosInputViewProtocol) {
+    func inputViewDidRequestPhotoLibraryPermission(_ inputView: PhotosInputViewProtocol) {
         self.photosPermissionHandler?()
     }
 }

@@ -52,12 +52,12 @@ public class PhotoMessagePresenter<ViewModelBuilderT, InteractionHandlerT where
             )
     }
 
-    public override class func registerCells(collectionView: UICollectionView) {
-        collectionView.registerClass(PhotoMessageCollectionViewCell.self, forCellWithReuseIdentifier: "photo-message")
+    public override class func registerCells(_ collectionView: UICollectionView) {
+        collectionView.register(PhotoMessageCollectionViewCell.self, forCellWithReuseIdentifier: "photo-message")
     }
 
-    public override func dequeueCell(collectionView collectionView: UICollectionView, indexPath: NSIndexPath) -> UICollectionViewCell {
-        return collectionView.dequeueReusableCellWithReuseIdentifier("photo-message", forIndexPath: indexPath)
+    public override func dequeueCell(collectionView: UICollectionView, indexPath: IndexPath) -> UICollectionViewCell {
+        return collectionView.dequeueReusableCell(withReuseIdentifier: "photo-message", for: indexPath)
     }
 
     public override func createViewModel() -> ViewModelBuilderT.ViewModelT {
@@ -84,7 +84,7 @@ public class PhotoMessagePresenter<ViewModelBuilderT, InteractionHandlerT where
         return nil
     }
 
-    public override func configureCell(cell: BaseMessageCollectionViewCell<PhotoBubbleView>, decorationAttributes: ChatItemDecorationAttributes, animated: Bool, additionalConfiguration: (() -> Void)?) {
+    public override func configureCell(_ cell: BaseMessageCollectionViewCell<PhotoBubbleView>, decorationAttributes: ChatItemDecorationAttributes, animated: Bool, additionalConfiguration: (() -> Void)?) {
         guard let cell = cell as? PhotoMessageCollectionViewCell else {
             assert(false, "Invalid cell received")
             return
@@ -99,7 +99,7 @@ public class PhotoMessagePresenter<ViewModelBuilderT, InteractionHandlerT where
 
     public func updateCurrentCell() {
         if let cell = self.photoCell, decorationAttributes = self.decorationAttributes {
-            self.configureCell(cell, decorationAttributes: decorationAttributes, animated: self.itemVisibility != .Appearing, additionalConfiguration: nil)
+            self.configureCell(cell, decorationAttributes: decorationAttributes, animated: self.itemVisibility != .appearing, additionalConfiguration: nil)
         }
     }
 }

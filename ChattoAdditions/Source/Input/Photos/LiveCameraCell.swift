@@ -60,8 +60,8 @@ class LiveCameraCell: UICollectionViewCell {
                     self.contentView.layer.insertSublayer(captureLayer, below: self.iconImageView.layer)
                     let animation = CABasicAnimation.bma_fadeInAnimationWithDuration(0.25)
                     let animationKey = "fadeIn"
-                    captureLayer.removeAnimationForKey(animationKey)
-                    captureLayer.addAnimation(animation, forKey: animationKey)
+                    captureLayer.removeAnimation(forKey: animationKey)
+                    captureLayer.add(animation, forKey: animationKey)
                 }
                 self.setNeedsLayout()
             }
@@ -80,25 +80,25 @@ class LiveCameraCell: UICollectionViewCell {
         }
     }
 
-    func updateWithAuthorizationStatus(status: AVAuthorizationStatus) {
+    func updateWithAuthorizationStatus(_ status: AVAuthorizationStatus) {
         self.authorizationStatus = status
         self.updateIcon()
     }
 
-    private var authorizationStatus: AVAuthorizationStatus = .NotDetermined
+    private var authorizationStatus: AVAuthorizationStatus = .notDetermined
 
     private func configureIcon() {
         self.iconImageView = UIImageView()
-        self.iconImageView.contentMode = .Center
+        self.iconImageView.contentMode = .center
         self.contentView.addSubview(self.iconImageView)
     }
 
     private func updateIcon() {
         switch self.authorizationStatus {
-        case .NotDetermined, .Authorized:
-            self.iconImageView.image = UIImage(named: Constants.cameraImageName, inBundle: NSBundle(forClass: LiveCameraCell.self), compatibleWithTraitCollection: nil)
-        case .Restricted, .Denied:
-            self.iconImageView.image = UIImage(named: Constants.lockedCameraImageName, inBundle: NSBundle(forClass: LiveCameraCell.self), compatibleWithTraitCollection: nil)
+        case .notDetermined, .authorized:
+            self.iconImageView.image = UIImage(named: Constants.cameraImageName, in: Bundle(for: LiveCameraCell.self), compatibleWith: nil)
+        case .restricted, .denied:
+            self.iconImageView.image = UIImage(named: Constants.lockedCameraImageName, in: Bundle(for: LiveCameraCell.self), compatibleWith: nil)
         }
         self.setNeedsLayout()
     }

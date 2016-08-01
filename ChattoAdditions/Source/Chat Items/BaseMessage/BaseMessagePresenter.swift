@@ -29,16 +29,16 @@ public protocol ViewModelBuilderProtocol {
     associatedtype ModelT: MessageModelProtocol
     associatedtype ViewModelT: MessageViewModelProtocol
     func canCreateViewModel(fromModel model: Any) -> Bool
-    func createViewModel(model: ModelT) -> ViewModelT
+    func createViewModel(_ model: ModelT) -> ViewModelT
 }
 
 public protocol BaseMessageInteractionHandlerProtocol {
     associatedtype ViewModelT
-    func userDidTapOnFailIcon(viewModel viewModel: ViewModelT, failIconView: UIView)
-    func userDidTapOnAvatar(viewModel viewModel: ViewModelT)
-    func userDidTapOnBubble(viewModel viewModel: ViewModelT)
-    func userDidBeginLongPressOnBubble(viewModel viewModel: ViewModelT)
-    func userDidEndLongPressOnBubble(viewModel viewModel: ViewModelT)
+    func userDidTapOnFailIcon(viewModel: ViewModelT, failIconView: UIView)
+    func userDidTapOnAvatar(viewModel: ViewModelT)
+    func userDidTapOnBubble(viewModel: ViewModelT)
+    func userDidBeginLongPressOnBubble(viewModel: ViewModelT)
+    func userDidEndLongPressOnBubble(viewModel: ViewModelT)
 }
 
 public class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHandlerT where
@@ -79,7 +79,7 @@ public class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHan
         return viewModel
     }
 
-    public final override func configureCell(cell: UICollectionViewCell, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
+    public final override func configureCell(_ cell: UICollectionViewCell, decorationAttributes: ChatItemDecorationAttributesProtocol?) {
         guard let cell = cell as? CellT else {
             assert(false, "Invalid cell given to presenter")
             return
@@ -94,11 +94,11 @@ public class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHan
     }
 
     public var decorationAttributes: ChatItemDecorationAttributes!
-    public func configureCell(cell: CellT, decorationAttributes: ChatItemDecorationAttributes, animated: Bool, additionalConfiguration: (() -> Void)?) {
+    public func configureCell(_ cell: CellT, decorationAttributes: ChatItemDecorationAttributes, animated: Bool, additionalConfiguration: (() -> Void)?) {
         cell.performBatchUpdates({ () -> Void in
             self.messageViewModel.showsTail = decorationAttributes.showsTail
-            cell.avatarView.hidden = !decorationAttributes.canShowAvatar
-            cell.bubbleView.userInteractionEnabled = true // just in case something went wrong while showing UIMenuController
+            cell.avatarView.isHidden = !decorationAttributes.canShowAvatar
+            cell.bubbleView.isUserInteractionEnabled = true // just in case something went wrong while showing UIMenuController
             cell.baseStyle = self.cellStyle
             cell.messageViewModel = self.messageViewModel
             cell.onBubbleTapped = { [weak self] (cell) in
@@ -131,7 +131,7 @@ public class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHan
             return 0
         }
         self.configureCell(self.sizingCell, decorationAttributes: decorationAttributes, animated: false, additionalConfiguration: nil)
-        return self.sizingCell.sizeThatFits(CGSize(width: width, height: CGFloat.max)).height
+        return self.sizingCell.sizeThatFits(CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)).height
     }
 
     public override var canCalculateHeightInBackground: Bool {
@@ -153,21 +153,21 @@ public class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHan
             assert(false, "Investigate -> Fix or remove assert")
             return false
         }
-        cell.bubbleView.userInteractionEnabled = false // This is a hack for UITextView, shouldn't harm to all bubbles
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseMessagePresenter.willShowMenu(_:)), name: UIMenuControllerWillShowMenuNotification, object: nil)
+        cell.bubbleView.isUserInteractionEnabled = false // This is a hack for UITextView, shouldn't harm to all bubbles
+        NotificationCenter.default.addObserver(self, selector: #selector(BaseMessagePresenter.willShowMenu(_:)), name: NSNotification.Name.UIMenuControllerWillShowMenu, object: nil)
         return true
     }
 
     @objc
-    func willShowMenu(notification: NSNotification) {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIMenuControllerWillShowMenuNotification, object: nil)
+    func willShowMenu(_ notification: Notification) {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIMenuControllerWillShowMenu, object: nil)
         guard let cell = self.cell, menuController = notification.object as? UIMenuController else {
             assert(false, "Investigate -> Fix or remove assert")
             return
         }
-        cell.bubbleView.userInteractionEnabled = true
+        cell.bubbleView.isUserInteractionEnabled = true
         menuController.setMenuVisible(false, animated: false)
-        menuController.setTargetRect(cell.bubbleView.bounds, inView: cell.bubbleView)
+        menuController.setTargetRect(cell.bubbleView.bounds, in: cell.bubbleView)
         menuController.setMenuVisible(true, animated: true)
     }
 
@@ -192,7 +192,7 @@ public class BaseMessagePresenter<BubbleViewT, ViewModelBuilderT, InteractionHan
         self.interactionHandler?.userDidTapOnAvatar(viewModel: self.messageViewModel)
     }
 
-    public func onCellFailedButtonTapped(failedButtonView: UIView) {
+    public func onCellFailedButtonTapped(_ failedButtonView: UIView) {
         self.interactionHandler?.userDidTapOnFailIcon(viewModel: self.messageViewModel, failIconView: failedButtonView)
     }
 }

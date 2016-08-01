@@ -33,13 +33,13 @@ final class LiveCameraCellPresenter {
 
     private weak var cell: LiveCameraCell?
 
-    func cellWillBeShown(cell: LiveCameraCell) {
+    func cellWillBeShown(_ cell: LiveCameraCell) {
         self.cell = cell
         self.configureCell()
         self.startCapturing()
     }
 
-    func cellWasHidden(cell: LiveCameraCell) {
+    func cellWasHidden(_ cell: LiveCameraCell) {
         if self.cell === cell {
             cell.captureLayer = nil
             self.cell = nil
@@ -74,11 +74,11 @@ final class LiveCameraCellPresenter {
     }
 
     // MARK: - App Notifications
-    lazy var notificationCenter = NSNotificationCenter.defaultCenter()
+    lazy var notificationCenter = NotificationCenter.default
 
     private func subscribeToAppNotifications() {
-        self.notificationCenter.addObserver(self, selector: #selector(LiveCameraCellPresenter.handleWillResignActiveNotification), name: UIApplicationWillResignActiveNotification, object: nil)
-        self.notificationCenter.addObserver(self, selector: #selector(LiveCameraCellPresenter.handleDidBecomeActiveNotification), name: UIApplicationDidBecomeActiveNotification, object: nil)
+        self.notificationCenter.addObserver(self, selector: #selector(LiveCameraCellPresenter.handleWillResignActiveNotification), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
+        self.notificationCenter.addObserver(self, selector: #selector(LiveCameraCellPresenter.handleDidBecomeActiveNotification), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
     }
 
     private func unsubscribeFromAppNotifications() {
@@ -132,16 +132,16 @@ final class LiveCameraCellPresenter {
 
     private var isCaptureAvailable: Bool {
         switch self.cameraAuthorizationStatus {
-        case .NotDetermined, .Restricted, .Denied:
+        case .notDetermined, .restricted, .denied:
             return false
-        case .Authorized:
+        case .authorized:
             return true
         }
     }
 
     lazy var captureSession: LiveCameraCaptureSessionProtocol = LiveCameraCaptureSession()
 
-    var cameraAuthorizationStatus: AVAuthorizationStatus = .NotDetermined {
+    var cameraAuthorizationStatus: AVAuthorizationStatus = .notDetermined {
         didSet {
             if self.isCaptureAvailable {
                 self.subscribeToAppNotifications()

@@ -54,7 +54,7 @@ public class TextMessageViewModelDefaultBuilder<TextMessageModelT: TextMessageMo
 
     let messageViewModelBuilder = MessageViewModelDefaultBuilder()
 
-    public func createViewModel(textMessage: TextMessageModelT) -> TextMessageViewModel<TextMessageModelT> {
+    public func createViewModel(_ textMessage: TextMessageModelT) -> TextMessageViewModel<TextMessageModelT> {
         let messageViewModel = self.messageViewModelBuilder.createMessageViewModel(textMessage)
         let textMessageViewModel = TextMessageViewModel(textMessage: textMessage, messageViewModel: messageViewModel)
         return textMessageViewModel

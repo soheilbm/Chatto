@@ -43,14 +43,14 @@ public class TextMessagePresenterBuilder<ViewModelBuilderT, InteractionHandlerT 
 
     let viewModelBuilder: ViewModelBuilderT
     let interactionHandler: InteractionHandlerT?
-    let layoutCache = NSCache()
+    let layoutCache = NSCache<AnyObject, AnyObject>()
 
     lazy var sizingCell: TextMessageCollectionViewCell = {
         var cell: TextMessageCollectionViewCell? = nil
-        if NSThread.isMainThread() {
+        if Thread.isMainThread {
             cell = TextMessageCollectionViewCell.sizingCell()
         } else {
-            dispatch_sync(dispatch_get_main_queue(), {
+            DispatchQueue.main.sync(execute: {
                 cell =  TextMessageCollectionViewCell.sizingCell()
             })
         }
@@ -61,11 +61,11 @@ public class TextMessagePresenterBuilder<ViewModelBuilderT, InteractionHandlerT 
     public lazy var textCellStyle: TextMessageCollectionViewCellStyleProtocol = TextMessageCollectionViewCellDefaultStyle()
     public lazy var baseMessageStyle: BaseMessageCollectionViewCellStyleProtocol = BaseMessageCollectionViewCellDefaultStyle()
 
-    public func canHandleChatItem(chatItem: ChatItemProtocol) -> Bool {
+    public func canHandleChatItem(_ chatItem: ChatItemProtocol) -> Bool {
         return self.viewModelBuilder.canCreateViewModel(fromModel: chatItem)
     }
 
-    public func createPresenterWithChatItem(chatItem: ChatItemProtocol) -> ChatItemPresenterProtocol {
+    public func createPresenterWithChatItem(_ chatItem: ChatItemProtocol) -> ChatItemPresenterProtocol {
         assert(self.canHandleChatItem(chatItem))
         return TextMessagePresenter<ViewModelBuilderT, InteractionHandlerT>(
             messageModel: chatItem as! ModelT,

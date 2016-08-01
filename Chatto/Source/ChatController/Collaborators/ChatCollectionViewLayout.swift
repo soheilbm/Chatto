@@ -34,18 +34,18 @@ public struct ChatCollectionViewLayoutModel {
     let layoutAttributesBySectionAndItem: [[UICollectionViewLayoutAttributes]]
     let calculatedForWidth: CGFloat
 
-    public static func createModel(collectionViewWidth: CGFloat, itemsLayoutData: [(height: CGFloat, bottomMargin: CGFloat)]) -> ChatCollectionViewLayoutModel {
+    public static func createModel(_ collectionViewWidth: CGFloat, itemsLayoutData: [(height: CGFloat, bottomMargin: CGFloat)]) -> ChatCollectionViewLayoutModel {
         var layoutAttributes = [UICollectionViewLayoutAttributes]()
         var layoutAttributesBySectionAndItem = [[UICollectionViewLayoutAttributes]]()
         layoutAttributesBySectionAndItem.append([UICollectionViewLayoutAttributes]())
 
         var verticalOffset: CGFloat = 0
-        for (index, layoutData) in itemsLayoutData.enumerate() {
-            let indexPath = NSIndexPath(forItem: index, inSection: 0)
+        for (index, layoutData) in itemsLayoutData.enumerated() {
+            let indexPath = IndexPath(item: index, section: 0)
             let (height, bottomMargin) = layoutData
             let itemSize = CGSize(width: collectionViewWidth, height: height)
             let frame = CGRect(origin: CGPoint(x: 0, y: verticalOffset), size: itemSize)
-            let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+            let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             attributes.frame = frame
             layoutAttributes.append(attributes)
             layoutAttributesBySectionAndItem[0].append(attributes)
@@ -75,14 +75,14 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
         self.layoutNeedsUpdate = true
     }
 
-    public override func prepareLayout() {
-        super.prepareLayout()
+    public override func prepare() {
+        super.prepare()
         guard self.layoutNeedsUpdate else { return }
         guard let delegate = self.delegate else { return }
         var oldLayoutModel = self.layoutModel
         self.layoutModel = delegate.chatCollectionViewLayoutModel()
         self.layoutNeedsUpdate = false
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { () -> Void in
+        DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async { () -> Void in
             // Dealloc of layout with 5000 items take 25 ms on tests on iPhone 4s
             // This moves dealloc out of main thread
             if oldLayoutModel != nil {
@@ -92,23 +92,23 @@ public class ChatCollectionViewLayout: UICollectionViewLayout {
         }
     }
 
-    public override func collectionViewContentSize() -> CGSize {
+    public override var collectionViewContentSize: CGSize {
         return self.layoutModel?.contentSize ?? .zero
     }
 
-    override public func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override public func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         return self.layoutModel.layoutAttributes.filter { $0.frame.intersects(rect) }
     }
 
-    public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        if indexPath.section < self.layoutModel.layoutAttributesBySectionAndItem.count && indexPath.item < self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section].count {
-            return self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section][indexPath.item]
+    public override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        if (indexPath as NSIndexPath).section < self.layoutModel.layoutAttributesBySectionAndItem.count && (indexPath as NSIndexPath).item < self.layoutModel.layoutAttributesBySectionAndItem[(indexPath as NSIndexPath).section].count {
+            return self.layoutModel.layoutAttributesBySectionAndItem[(indexPath as NSIndexPath).section][(indexPath as NSIndexPath).item]
         }
         assert(false, "Unexpected indexPath requested:\(indexPath)")
         return nil
     }
 
-    public override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
+    public override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return self.layoutModel.calculatedForWidth != newBounds.width
     }
 }

@@ -38,10 +38,10 @@ public class TabInputButton: UIButton {
 
     static public func makeInputButton(withAppearance appearance: TabInputButtonAppearance) -> TabInputButton {
         let images = appearance.images
-        let button = TabInputButton(type: .Custom)
-        button.exclusiveTouch = true
+        let button = TabInputButton(type: .custom)
+        button.isExclusiveTouch = true
         images.forEach { (state, image) in
-            button.setImage(image, forState: state)
+            button.setImage(image, for: state)
         }
         button.size = appearance.size
         return button
@@ -49,10 +49,10 @@ public class TabInputButton: UIButton {
 
     private var size: CGSize?
 
-    public override func intrinsicContentSize() -> CGSize {
+    public override var intrinsicContentSize: CGSize {
         if let size = self.size {
             return size
         }
-        return super.intrinsicContentSize()
+        return super.intrinsicContentSize
     }
 }
