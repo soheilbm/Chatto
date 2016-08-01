@@ -62,9 +62,9 @@ class PhotosInputCameraPicker: NSObject {
 
 extension PhotosInputCameraPicker: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
-//    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
-//        self.finishPickingImage(image, fromPicker: picker)
-//    }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        self.finishPickingImage(info[UIImagePickerControllerOriginalImage] as? UIImage, fromPicker: picker)
+    }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.finishPickingImage(nil, fromPicker: picker)
